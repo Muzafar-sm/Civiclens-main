@@ -1,0 +1,10 @@
+pdfplumber
+requests
+sqlalchemy
+psycopg2-binary
+schedule
+pandera
+mlflow
+python-dotenv
+transformers
+torch
