@@ -2,6 +2,17 @@
 
 CivicLens is a comprehensive Data Engineering + MLOps portfolio project that processes government PDFs using HuggingFace models, with a FastAPI backend and Next.js frontend. It includes a full ETL pipeline, PostgreSQL data warehouse, MLflow experiment tracking, and data quality checks.
 
+# Here is a workflow walkdown
+
+
+
+https://github.com/user-attachments/assets/960659a9-1b26-4db6-83b5-ae9b03a8320c
+
+
+
+
+
+
 ## Architecture
 
 ```mermaid
