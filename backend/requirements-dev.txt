@@ -1,0 +1,5 @@
+# Packages required to run the automated tests.
+# Torch, Transformers, PostgreSQL, Redis, and Docker are intentionally absent.
+# The tests stub those imports. See TESTING.md.
+pytest==7.4.3
+httpx==0.27.0
