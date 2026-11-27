@@ -23,7 +23,7 @@ cd backend
 python -m pytest
 ```
 
-Expected result on the current code: **27 passed, 1 xfailed**. The xfailed test is deliberate. See "Known defects" below. Configuration tests live in `backend/tests/test_config.py`. They build `Settings` in memory and do not open a database connection.
+Expected result on the current code: **33 passed, 1 xfailed**. The xfailed test is deliberate. See "Known defects" below. Configuration tests live in `backend/tests/test_config.py`. Model tests in `backend/tests/test_models.py` inspect SQLAlchemy metadata and do not open a database connection.
 
 To see the question-answering assertion fail in full:
 
