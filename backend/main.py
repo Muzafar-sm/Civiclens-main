@@ -1,12 +1,19 @@
+import logging
+from typing import Dict
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from typing import Dict
-from app.api import document
+
 from app.ai.models import ai_models
+from app.api import document
+from app.core.config import get_settings
+
+settings = get_settings()
+logging.basicConfig(level=getattr(logging, settings.log_level))
 
 app = FastAPI(
-    title="CivicLens API",
+    title=settings.app_name,
     description="AI-Powered Civic Policy Analyzer API",
     version="1.0.0"
 )
@@ -14,7 +21,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,7 +59,10 @@ async def health_check() -> JSONResponse:
 
 if __name__ == "__main__":
     import uvicorn
-    import os
 
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run(
+        "main:app",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=True,
+    )
