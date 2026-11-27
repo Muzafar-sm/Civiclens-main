@@ -23,7 +23,15 @@ if str(BACKEND_ROOT) not in sys.path:
 
 # A mistaken database import must not reach the Postgres already on this machine.
 # Port 1 refuses the connection immediately. create_engine() itself does not connect.
+# These assignments also keep Settings independent of the developer shell.
 os.environ["DATABASE_URL"] = "postgresql://civiclens_test:civiclens_test@127.0.0.1:1/civiclens_tests"
+os.environ["APP_NAME"] = "CivicLens API"
+os.environ["ENVIRONMENT"] = "test"
+os.environ["DEBUG"] = "false"
+os.environ["API_HOST"] = "127.0.0.1"
+os.environ["PORT"] = "8000"
+os.environ["CORS_ORIGINS"] = "*"
+os.environ["LOG_LEVEL"] = "WARNING"
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 os.environ["HF_DATASETS_OFFLINE"] = "1"

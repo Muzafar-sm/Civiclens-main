@@ -23,7 +23,7 @@ cd backend
 python -m pytest
 ```
 
-Expected result on the current code: **8 passed, 1 xfailed**. The xfailed test is deliberate. See "Known defects" below.
+Expected result on the current code: **27 passed, 1 xfailed**. The xfailed test is deliberate. See "Known defects" below. Configuration tests live in `backend/tests/test_config.py`. They build `Settings` in memory and do not open a database connection.
 
 To see the question-answering assertion fail in full:
 
@@ -63,7 +63,7 @@ The build also warns that `experimental.serverActions: true` in `frontend/next.c
 
 - `torch`, `transformers`, and `pdfminer` are replaced with in-memory stubs. Importing the app executes `backend/app/ai/models.py`, and that file imports Torch and Transformers at the top. Replacing `sys.modules` first means those imports never load the real libraries or a Hugging Face cache.
 - `HF_HUB_OFFLINE`, `TRANSFORMERS_OFFLINE`, and `HF_DATASETS_OFFLINE` are set as a backstop so a missed stub cannot download weights.
-- `DATABASE_URL` points at `127.0.0.1:1`, a closed port. `create_engine()` does not connect until a query runs. The current routes never query. If a future test imported the database module and queried it, the connection would fail on port 1 instead of reaching a database already running on port 5432.
+- `DATABASE_URL` points at `127.0.0.1:1`, a closed port. Importing settings does not create an engine. `get_engine()` calls `create_engine`, which still does not connect until a query runs. The configuration tests never issue a query.
 - The `client` fixture replaces `AIModels.initialize_models` with a function that does nothing. `TestClient` still fires the real startup event in `backend/main.py`. The event no longer calls `from_pretrained`.
 - Text-upload tests replace `analyze_document_backend` with a fixture dict. The test checks that the HTTP response carries that dict's fields. It does not claim those strings came from a model.
 
