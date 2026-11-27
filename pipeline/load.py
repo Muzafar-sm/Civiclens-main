@@ -1,55 +1,32 @@
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
 from dotenv import load_dotenv
-import os
-from sqlalchemy import create_engine, Column, Integer, Text, Float, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
-Base = declarative_base()
 
+_BACKEND_ROOT = Path(__file__).resolve().parents[1] / "backend"
+if str(_BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(_BACKEND_ROOT))
 
-class Document(Base):
-    __tablename__ = "documents"
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    filename = Column(Text, nullable=False)
-    source_url = Column(Text)
-    ingested_at = Column(DateTime, nullable=False)
-    raw_text = Column(Text)
-    word_count = Column(Integer)
-    page_count = Column(Integer)
-
-
-class Insight(Base):
-    __tablename__ = "insights"
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
-    summary = Column(Text)
-    sentiment_label = Column(Text)
-    sentiment_score = Column(Float)
-    model_name = Column(Text)
-    generated_at = Column(DateTime, nullable=False)
+from app.database import get_engine  # noqa: E402
+from app.models import Document, Insight  # noqa: E402
 
 
 def get_db_session():
-    """Create and return a SQLAlchemy session."""
-    db_user = os.getenv("POSTGRES_USER", "admin")
-    db_password = os.getenv("POSTGRES_PASSWORD", "secret")
-    db_host = os.getenv("POSTGRES_HOST", "localhost")
-    db_port = os.getenv("POSTGRES_PORT", "5432")
-    db_name = os.getenv("POSTGRES_DB", "civiclens")
-    
-    db_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-    engine = create_engine(db_url)
-    Session = sessionmaker(bind=engine)
-    return Session()
+    """Return a session for the centralized DATABASE_URL.
+
+    Creating the session does not open a connection. The first query does.
+    POSTGRES_* values are not used to choose the database.
+    """
+    return sessionmaker(bind=get_engine())()
 
 
 def load_documents_and_insights(
